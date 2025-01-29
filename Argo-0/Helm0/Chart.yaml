@@ -1,0 +1,6 @@
+apiVersion: v2
+name: crm-chart
+description: A Helm chart for CRM app deployment and rollout
+version: 0.1.0
+appVersion: "1.0"
+

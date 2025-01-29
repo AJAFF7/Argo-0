@@ -1,0 +1,9 @@
+image:
+  repository: ajaff/crm
+  tag: v1.0
+
+replicaCount: 2
+
+# service:
+#   nodePort: 31000
+

@@ -1,0 +1,7 @@
+image:
+  repository: ajaff/vcoins
+  tag: v1.0
+
+replicaCount: 2
+
+ 
