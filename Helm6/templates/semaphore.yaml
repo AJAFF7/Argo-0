@@ -1,19 +1,31 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: semaphore
+  name: semaphore-rollout
+  namespace: default
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: semaphore
+      app: semaphore-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100
+  
   template:
     metadata:
       labels:
-        app: semaphore
+        app: semaphore-app
     spec:
       containers:
-        - name: semaphore
+        - name: semaphore-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 3000
@@ -47,16 +59,4 @@ spec:
             - name: ANSIBLE_HOST_KEY_CHECKING
               value: "False"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: semaphore-service
-spec:
-  selector:
-    app: semaphore
-  ports:
-    - port: 80
-      targetPort: 3000
-  type: LoadBalancer
 

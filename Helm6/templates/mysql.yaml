@@ -1,19 +1,31 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: mysql
+  name: mysql-rollout
+  namespace: default
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: mysql
+      app: mysql-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100    
+      
   template:
     metadata:
       labels:
-        app: mysql
+        app: mysql-app
     spec:
       containers:
-        - name: mysql
+        - name: mysql-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 3306
@@ -33,18 +45,7 @@ spec:
         - name: mysql-data
           persistentVolumeClaim:
             claimName: mysql-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-service
-spec:
-  selector:
-    app: mysql
-  ports:
-    - port: 3306
-      targetPort: 3306
-  type: ClusterIP
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
