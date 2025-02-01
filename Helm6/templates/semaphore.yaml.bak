@@ -1,20 +1,31 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: semaphore
+  name: semaphore-rollout
+  namespace: default
 spec:
-  replicas: 1
+  replicas: {{ .Values.semaphore-app.replicaCount }}
   selector:
     matchLabels:
-      app: semaphore
+      app: semaphore-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100
   template:
     metadata:
       labels:
-        app: semaphore
+        app: semaphore-app
     spec:
       containers:
-        - name: semaphore
-          image: semaphoreui/semaphore:latest
+        - name: semaphore-app
+          image: "{{ .Values.semaphore-app.image.repository }}:{{ .Values.semaphore-app.image.tag }}"
           ports:
             - containerPort: 3000
           env:
@@ -23,7 +34,7 @@ spec:
             - name: SEMAPHORE_DB_PASS
               value: semaphore
             - name: SEMAPHORE_DB_HOST
-              value: mysql-service # Adjust according to your DB service
+              value: mysql-service # Corrected DB service name
             - name: SEMAPHORE_DB_PORT
               value: "3306"
             - name: SEMAPHORE_DB_DIALECT
@@ -46,17 +57,4 @@ spec:
               value: 'no'
             - name: ANSIBLE_HOST_KEY_CHECKING
               value: "False"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: semaphore-service
-spec:
-  selector:
-    app: semaphore
-  ports:
-    - port: 80
-      targetPort: 3000
-  type: LoadBalancer
 
