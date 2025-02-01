@@ -4,6 +4,4 @@ image:
 
 replicaCount: 2
 
-# service:
-#   nodePort: 31000
 
