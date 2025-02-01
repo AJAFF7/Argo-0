@@ -2,7 +2,7 @@ image:
   repository: ajaff/dms
   tag: v1.0
 
-replicaCount: 2
+replicaCount: 1
 
 
 
