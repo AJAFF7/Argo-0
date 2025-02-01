@@ -23,11 +23,11 @@ spec:
             - name: SEMAPHORE_DB_PASS
               value: semaphore
             - name: SEMAPHORE_DB_HOST
-              value: mysql-service # Change to postgres-service for PostgreSQL
+              value: mysql-service # Adjust according to your DB service
             - name: SEMAPHORE_DB_PORT
-              value: "3306" # Change to 5432 for PostgreSQL
+              value: "3306"
             - name: SEMAPHORE_DB_DIALECT
-              value: mysql # Change to postgres for PostgreSQL
+              value: mysql
             - name: SEMAPHORE_DB
               value: semaphore
             - name: SEMAPHORE_PLAYBOOK_PATH
@@ -46,6 +46,7 @@ spec:
               value: 'no'
             - name: ANSIBLE_HOST_KEY_CHECKING
               value: "False"
+
 ---
 apiVersion: v1
 kind: Service
