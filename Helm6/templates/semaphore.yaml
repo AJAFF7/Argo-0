@@ -4,7 +4,7 @@ metadata:
   name: semaphore-rollout
   namespace: default
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.semaphore-app.replicaCount }}
   selector:
     matchLabels:
       app: semaphore-app
@@ -18,7 +18,6 @@ spec:
       - pause:
           duration: 60s
       - setWeight: 100
-  
   template:
     metadata:
       labels:
@@ -26,7 +25,7 @@ spec:
     spec:
       containers:
         - name: semaphore-app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.semaphore-app.image.repository }}:{{ .Values.semaphore-app.image.tag }}"
           ports:
             - containerPort: 3000
           env:
@@ -35,7 +34,7 @@ spec:
             - name: SEMAPHORE_DB_PASS
               value: semaphore
             - name: SEMAPHORE_DB_HOST
-              value: mysql-service # Adjust according to your DB service
+              value: mysql-service # Corrected DB service name
             - name: SEMAPHORE_DB_PORT
               value: "3306"
             - name: SEMAPHORE_DB_DIALECT
@@ -58,5 +57,4 @@ spec:
               value: 'no'
             - name: ANSIBLE_HOST_KEY_CHECKING
               value: "False"
-
 

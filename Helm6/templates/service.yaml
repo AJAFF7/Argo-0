@@ -19,10 +19,10 @@ metadata:
   name: mysql-service
   namespace: default
 spec:
-  type: LoadBalancer
+  type: ClusterIP # Changed to ClusterIP for internal access
   selector:
     app: mysql-app
   ports:
     - port: 3306
       targetPort: 3306
-  type: ClusterIP
+

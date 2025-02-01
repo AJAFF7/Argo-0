@@ -4,7 +4,7 @@ metadata:
   name: mysql-rollout
   namespace: default
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.mysql-app.replicaCount }}
   selector:
     matchLabels:
       app: mysql-app
@@ -17,8 +17,7 @@ spec:
       - setWeight: 50
       - pause:
           duration: 60s
-      - setWeight: 100    
-      
+      - setWeight: 100
   template:
     metadata:
       labels:
@@ -26,7 +25,7 @@ spec:
     spec:
       containers:
         - name: mysql-app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.mysql-app.image.repository }}:{{ .Values.mysql-app.image.tag }}"
           ports:
             - containerPort: 3306
           env:
@@ -57,4 +56,5 @@ spec:
   resources:
     requests:
       storage: 8Gi
+  storageClassName: standard # Added StorageClass
 
