@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/AJAFF7/Argo-1.git
+    repoURL: https://github.com/AJAFF7/Argo-0.git
     targetRevision: HEAD
     path: Helm6  # Update the path to the Helm chart directory
     helm:
