@@ -1,6 +1,0 @@
-apiVersion: v2
-name: semaphore-chart
-description: A Helm chart for Semaphore app deployment and rollout
-version: 0.1.0
-appVersion: "1.0"
-
