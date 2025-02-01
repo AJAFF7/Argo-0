@@ -1,41 +1,62 @@
-semaphore:
-  replicaCount: {{ .Values.semaphore.replicaCount }}
-  image:
-    repository: {{ .Values.semaphore.image.repository }}
-    tag: {{ .Values.semaphore.image.tag }}
-  service:
-    type: {{ .Values.semaphore.service.type }}
-    port: {{ .Values.semaphore.service.port }}
-  env:
-    SEMAPHORE_DB_USER: {{ .Values.semaphore.env.SEMAPHORE_DB_USER }}
-    SEMAPHORE_DB_PASS: {{ .Values.semaphore.env.SEMAPHORE_DB_PASS }}
-    SEMAPHORE_DB_HOST: {{ .Values.semaphore.env.SEMAPHORE_DB_HOST }}
-    SEMAPHORE_DB_PORT: {{ .Values.semaphore.env.SEMAPHORE_DB_PORT }}
-    SEMAPHORE_DB_DIALECT: {{ .Values.semaphore.env.SEMAPHORE_DB_DIALECT }}
-    SEMAPHORE_DB: {{ .Values.semaphore.env.SEMAPHORE_DB }}
-    SEMAPHORE_PLAYBOOK_PATH: {{ .Values.semaphore.env.SEMAPHORE_PLAYBOOK_PATH }}
-    SEMAPHORE_ADMIN_PASSWORD: {{ .Values.semaphore.env.SEMAPHORE_ADMIN_PASSWORD }}
-    SEMAPHORE_ADMIN_NAME: {{ .Values.semaphore.env.SEMAPHORE_ADMIN_NAME }}
-    SEMAPHORE_ADMIN_EMAIL: {{ .Values.semaphore.env.SEMAPHORE_ADMIN_EMAIL }}
-    SEMAPHORE_ADMIN: {{ .Values.semaphore.env.SEMAPHORE_ADMIN }}
-    SEMAPHORE_ACCESS_KEY_ENCRYPTION: {{ .Values.semaphore.env.SEMAPHORE_ACCESS_KEY_ENCRYPTION }}
-    SEMAPHORE_LDAP_ACTIVATED: {{ .Values.semaphore.env.SEMAPHORE_LDAP_ACTIVATED }}
-    ANSIBLE_HOST_KEY_CHECKING: {{ .Values.semaphore.env.ANSIBLE_HOST_KEY_CHECKING }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: semaphore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: semaphore
+  template:
+    metadata:
+      labels:
+        app: semaphore
+    spec:
+      containers:
+        - name: semaphore
+          image: semaphoreui/semaphore:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SEMAPHORE_DB_USER
+              value: semaphore
+            - name: SEMAPHORE_DB_PASS
+              value: semaphore
+            - name: SEMAPHORE_DB_HOST
+              value: mysql-service # Adjust according to your DB service
+            - name: SEMAPHORE_DB_PORT
+              value: "3306"
+            - name: SEMAPHORE_DB_DIALECT
+              value: mysql
+            - name: SEMAPHORE_DB
+              value: semaphore
+            - name: SEMAPHORE_PLAYBOOK_PATH
+              value: /tmp/semaphore/
+            - name: SEMAPHORE_ADMIN_PASSWORD
+              value: admin
+            - name: SEMAPHORE_ADMIN_NAME
+              value: admin
+            - name: SEMAPHORE_ADMIN_EMAIL
+              value: a.j.s-engineer@outlook.com
+            - name: SEMAPHORE_ADMIN
+              value: admin
+            - name: SEMAPHORE_ACCESS_KEY_ENCRYPTION
+              value: LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU=
+            - name: SEMAPHORE_LDAP_ACTIVATED
+              value: 'no'
+            - name: ANSIBLE_HOST_KEY_CHECKING
+              value: "False"
 
-mysql:
-  replicaCount: {{ .Values.mysql.replicaCount }}
-  image:
-    repository: {{ .Values.mysql.image.repository }}
-    tag: {{ .Values.mysql.image.tag }}
-  service:
-    type: {{ .Values.mysql.service.type }}
-    port: {{ .Values.mysql.service.port }}
-  env:
-    MYSQL_ROOT_PASSWORD: {{ .Values.mysql.env.MYSQL_ROOT_PASSWORD }}
-    MYSQL_DATABASE: {{ .Values.mysql.env.MYSQL_DATABASE }}
-    MYSQL_USER: {{ .Values.mysql.env.MYSQL_USER }}
-    MYSQL_PASSWORD: {{ .Values.mysql.env.MYSQL_PASSWORD }}
-  persistence:
-    enabled: {{ .Values.mysql.persistence.enabled }}
-    size: {{ .Values.mysql.persistence.size }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: semaphore-service
+spec:
+  selector:
+    app: semaphore
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
 
