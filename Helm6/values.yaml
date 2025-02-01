@@ -1,0 +1,43 @@
+# Semaphore Configuration
+semaphore:
+  enabled: true
+  image: semaphoreui/semaphore:latest
+  replicas: 1
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 3000
+  env:
+    SEMAPHORE_DB_USER: semaphore
+    SEMAPHORE_DB_PASS: semaphore
+    SEMAPHORE_DB_HOST: mysql-service
+    SEMAPHORE_DB_PORT: "3306"
+    SEMAPHORE_DB_DIALECT: mysql
+    SEMAPHORE_DB: semaphore
+    SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
+    SEMAPHORE_ADMIN_PASSWORD: admin
+    SEMAPHORE_ADMIN_NAME: admin
+    SEMAPHORE_ADMIN_EMAIL: a.j.s-engineer@outlook.com
+    SEMAPHORE_ADMIN: admin
+    SEMAPHORE_ACCESS_KEY_ENCRYPTION: LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU=
+    SEMAPHORE_LDAP_ACTIVATED: "no"
+    ANSIBLE_HOST_KEY_CHECKING: "False"
+
+# MySQL Configuration
+mysql:
+  enabled: true
+  image: mysql:8.0
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 3306
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+  env:
+    MYSQL_ROOT_PASSWORD: rootpassword
+    MYSQL_DATABASE: semaphore
+    MYSQL_USER: semaphore
+    MYSQL_PASSWORD: semaphore
+
