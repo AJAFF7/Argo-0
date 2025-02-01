@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cloudflare-chart
+description: A Helm chart for Cloudflared app deployment and rollout 
+version: 0.1.0
+appVersion: "1.0"
+

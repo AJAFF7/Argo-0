@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: semaphore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: semaphore
+  template:
+    metadata:
+      labels:
+        app: semaphore
+    spec:
+      containers:
+        - name: semaphore
+          image: semaphoreui/semaphore:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SEMAPHORE_DB_USER
+              value: semaphore
+            - name: SEMAPHORE_DB_PASS
+              value: semaphore
+            - name: SEMAPHORE_DB_HOST
+              value: mysql-service # Change to postgres-service for PostgreSQL
+            - name: SEMAPHORE_DB_PORT
+              value: "3306" # Change to 5432 for PostgreSQL
+            - name: SEMAPHORE_DB_DIALECT
+              value: mysql # Change to postgres for PostgreSQL
+            - name: SEMAPHORE_DB
+              value: semaphore
+            - name: SEMAPHORE_PLAYBOOK_PATH
+              value: /tmp/semaphore/
+            - name: SEMAPHORE_ADMIN_PASSWORD
+              value: admin
+            - name: SEMAPHORE_ADMIN_NAME
+              value: admin
+            - name: SEMAPHORE_ADMIN_EMAIL
+              value: a.j.s-engineer@outlook.com
+            - name: SEMAPHORE_ADMIN
+              value: admin
+            - name: SEMAPHORE_ACCESS_KEY_ENCRYPTION
+              value: LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU=
+            - name: SEMAPHORE_LDAP_ACTIVATED
+              value: 'no'
+            - name: ANSIBLE_HOST_KEY_CHECKING
+              value: "False"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: semaphore-service
+spec:
+  selector:
+    app: semaphore
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
+

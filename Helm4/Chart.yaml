@@ -1,0 +1,6 @@
+apiVersion: v2
+name: Uptime-chart
+description: A Helm chart for Uptime-kuma app deployment and rollout
+version: 0.1.0
+appVersion: "1.0"
+

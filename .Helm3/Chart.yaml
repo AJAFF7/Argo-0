@@ -1,6 +1,0 @@
-apiVersion: v2
-name: vcoins-chart
-description: A Helm chart for Vcoins app deployment and rollout
-version: 0.1.0
-appVersion: "1.0"
-

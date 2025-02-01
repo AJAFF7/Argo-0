@@ -1,0 +1,7 @@
+image:
+  repository: cloudflare/cloudflared
+  tag: latest
+
+replicaCount: 1
+
+

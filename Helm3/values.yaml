@@ -1,0 +1,8 @@
+image:
+  repository: jgraph/drawio
+  tag: latest
+
+replicaCount: 1
+
+
+

@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: uptime-rollout
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: uptime-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: uptime-app
+    spec:
+      containers:
+      - name: uptime-app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+ #       imagePullPolicy: Always  # Ensures the latest image is always pulled
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            memory: "150Mi"  # Set memory limit to 100MB
+          requests:
+            memory: "150Mi"  # Optional: set a memory request to match the limit
+
