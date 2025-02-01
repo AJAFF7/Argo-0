@@ -1,12 +1,7 @@
-semaphore-app:
   image:
     repository: semaphoreui/semaphore
     tag: latest
   replicaCount: 1
 
-mysql-app:
-  image:
-    repository: mysql
-    tag: 8.0
-  replicaCount: 1
+
 

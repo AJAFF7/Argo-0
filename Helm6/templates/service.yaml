@@ -12,17 +12,4 @@ spec:
       port: 80         # External port exposed by the service
       targetPort: 3000  # The container's port (defined in your Rollout)
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-service
-  namespace: default
-spec:
-  type: ClusterIP # Changed to ClusterIP for internal access
-  selector:
-    app: mysql-app
-  ports:
-    - port: 3306
-      targetPort: 3306
 
