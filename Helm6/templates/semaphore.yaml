@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: semaphore
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: semaphore
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: semaphore
-          image: semaphoreui/semaphore:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 3000
           env:
