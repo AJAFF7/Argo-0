@@ -1,4 +1,7 @@
-replicaCount: 1
+  image:
+    repository: semaphoreui/semaphore
+    tag: latest
+  replicaCount: 1
 
 
 

@@ -10,9 +10,9 @@ spec:
     repoURL: https://github.com/AJAFF7/Argo-0.git
     targetRevision: HEAD
     path: Helm6  # Update the path to the Helm chart directory
- #   helm:
- #     valueFiles:
- #       - values.yaml  # Specify the Helm values file
+    helm:
+      valueFiles:
+        - values.yaml  # Specify the Helm values file
   destination:
     server: https://kubernetes.default.svc
     namespace: default
