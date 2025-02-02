@@ -1,62 +1,67 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: semaphore
+  name: semaphore-rollout
+  namespace: default
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: semaphore
+      app: semaphore-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100
   template:
     metadata:
       labels:
-        app: semaphore
+        app: semaphore-app
     spec:
       containers:
-        - name: semaphore
-          image: semaphoreui/semaphore:latest
-          ports:
-            - containerPort: 3000
-          env:
-            - name: SEMAPHORE_DB_USER
-              value: semaphore
-            - name: SEMAPHORE_DB_PASS
-              value: semaphore
-            - name: SEMAPHORE_DB_HOST
-              value: mysql-service # Adjust according to your DB service
-            - name: SEMAPHORE_DB_PORT
-              value: "3306"
-            - name: SEMAPHORE_DB_DIALECT
-              value: mysql
-            - name: SEMAPHORE_DB
-              value: semaphore
-            - name: SEMAPHORE_PLAYBOOK_PATH
-              value: /tmp/semaphore/
-            - name: SEMAPHORE_ADMIN_PASSWORD
-              value: admin
-            - name: SEMAPHORE_ADMIN_NAME
-              value: admin
-            - name: SEMAPHORE_ADMIN_EMAIL
-              value: a.j.s-engineer@outlook.com
-            - name: SEMAPHORE_ADMIN
-              value: admin
-            - name: SEMAPHORE_ACCESS_KEY_ENCRYPTION
-              value: LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU=
-            - name: SEMAPHORE_LDAP_ACTIVATED
-              value: 'no'
-            - name: ANSIBLE_HOST_KEY_CHECKING
-              value: "False"
+      - name: semaphore-app
+        image: "semaphoreui/semaphore:latest"
+        ports:
+        - containerPort: 3000
+        env:
+        - name: SEMAPHORE_DB_USER
+          value: semaphore
+        - name: SEMAPHORE_DB_PASS
+          value: semaphore
+        - name: SEMAPHORE_DB_HOST
+          value: mysql-service
+        - name: SEMAPHORE_DB_PORT
+          value: "3306"
+        - name: SEMAPHORE_DB_DIALECT
+          value: mysql
+        - name: SEMAPHORE_DB
+          value: semaphore
+        - name: SEMAPHORE_PLAYBOOK_PATH
+          value: /tmp/semaphore/
+        - name: SEMAPHORE_ADMIN_PASSWORD
+          value: admin
+        - name: SEMAPHORE_ADMIN_NAME
+          value: admin
+        - name: SEMAPHORE_ADMIN_EMAIL
+          value: a.j.s-engineer@outlook.com
+        - name: SEMAPHORE_ADMIN
+          value: admin
+        - name: SEMAPHORE_ACCESS_KEY_ENCRYPTION
+          value: LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU=
+        - name: SEMAPHORE_LDAP_ACTIVATED
+          value: 'no'
+        - name: ANSIBLE_HOST_KEY_CHECKING
+          value: "False"
+        resources:
+          limits:
+            memory: "100Mi"
+          requests:
+            memory: "100Mi"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: semaphore-service
-spec:
-  selector:
-    app: semaphore
-  ports:
-    - port: 80
-      targetPort: 3000
-  type: LoadBalancer
+
 
