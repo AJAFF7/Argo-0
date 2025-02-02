@@ -4,7 +4,7 @@ metadata:
   name: semaphore-rollout
   namespace: default
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: semaphore-app
