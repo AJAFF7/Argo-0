@@ -64,4 +64,19 @@ spec:
             memory: "100Mi"
 
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: semaphore-service
+  namespace: default
+spec:
+  type: LoadBalancer 
+  selector:
+    app: semaphore-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
 
