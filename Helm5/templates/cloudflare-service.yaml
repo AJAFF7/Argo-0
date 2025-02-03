@@ -10,4 +10,4 @@ spec:
     - protocol: TCP
       port: 80           # The port exposed by the service
       targetPort: 80      # The port on the container that the service should forward traffic to
-
+  type: LoadBalancer
