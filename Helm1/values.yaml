@@ -4,6 +4,6 @@ image:
 
 replicaCount: 1
 
-
-
+env:
+  MONGO_URI: "mongodb://mongo-service.default.svc.cluster.local:27017"
 

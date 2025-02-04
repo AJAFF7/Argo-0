@@ -26,12 +26,15 @@ spec:
       containers:
       - name: dms-app
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: Always  # Ensures the latest image is always pulled
+        imagePullPolicy: Always
         ports:
         - containerPort: 8282
         resources:
           limits:
-            memory: "100Mi"  # Set memory limit to 100MB
+            memory: "100Mi"
           requests:
-            memory: "100Mi"  # Optional: set a memory request to match the limit
+            memory: "100Mi"
+        env:
+        - name: MONGO_URI
+          value: "{{ .Values.env.MONGO_URI }}"  # Fetch MongoDB URI from values.yaml
 
