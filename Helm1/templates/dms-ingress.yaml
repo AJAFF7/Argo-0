@@ -1,20 +1,36 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
 metadata:
-  name: dms-ingress
+  name: dms-gateway
   namespace: default
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
-  rules:
-    - host: dms.ajs-engineer.com  # Custom domain for local access
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: dms-service  # The service you've already set up
-                port:
-                  number: 80
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "dms.ajs-engineer.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: dms-virtualservice
+  namespace: default
+spec:
+  hosts:
+  - "dms.ajs-engineer.com"
+  gateways:
+  - dms-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: dms-service
+        port:
+          number: 80
+
