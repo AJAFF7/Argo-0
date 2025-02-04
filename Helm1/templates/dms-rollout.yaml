@@ -1,3 +1,45 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Rollout
+# metadata:
+#   name: dms-rollout
+#   namespace: default
+# spec:
+#   replicas: {{ .Values.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: dms-app
+#   strategy:
+#     canary:
+#       steps:
+#       - setWeight: 20
+#       - pause:
+#           duration: 30s
+#       - setWeight: 50
+#       - pause:
+#           duration: 60s
+#       - setWeight: 100
+#   template:
+#     metadata:
+#       labels:
+#         app: dms-app
+#     spec:
+#       containers:
+#       - name: dms-app
+#         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 8282
+#         resources:
+#           limits:
+#             memory: "100Mi"
+#           requests:
+#             memory: "100Mi"
+#         env:
+#         - name: MONGO_URI
+#           value: "{{ .Values.env.MONGO_URI }}"  # Fetch MongoDB URI from values.yaml
+
+
+
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -36,5 +78,7 @@ spec:
             memory: "100Mi"
         env:
         - name: MONGO_URI
-          value: "{{ .Values.env.MONGO_URI }}"  # Fetch MongoDB URI from values.yaml
-
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-uri

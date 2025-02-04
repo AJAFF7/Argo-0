@@ -5,7 +5,7 @@ image:
 replicaCount: 1
 
 env:
-  MONGO_URI: "mongodb://jaff:mdb5550140@mongo-service.default.svc.cluster.local:27017/Client?authSource=admin"
+#  MONGO_URI: "mongodb://jaff:mdb5550140@mongo-service.default.svc.cluster.local:27017/Client?authSource=admin"
 
 
 #  MONGO_URI: "mongodb://mongo-service.default.svc.cluster.local:27017"
