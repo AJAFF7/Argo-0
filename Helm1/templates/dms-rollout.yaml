@@ -3,8 +3,6 @@ kind: Rollout
 metadata:
   name: dms-rollout
   namespace: default
-  annotations:
-    sidecar.istio.io/inject: "true"  # Ensure Istio sidecar is injected
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -28,12 +26,12 @@ spec:
       containers:
       - name: dms-app
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: Always  # Ensures the latest image is always pulled
         ports:
         - containerPort: 8282
         resources:
           limits:
-            memory: "100Mi"
+            memory: "100Mi"  # Set memory limit to 100MB
           requests:
-            memory: "100Mi"
+            memory: "100Mi"  # Optional: set a memory request to match the limit
 
