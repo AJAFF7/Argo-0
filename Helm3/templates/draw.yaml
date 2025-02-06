@@ -21,9 +21,9 @@ spec:
         - containerPort: 8080
         resources:
           limits:
-            memory: "300Mi"  # Set memory limit to 300Mi
+            memory: "250Mi"  # Set memory limit to 300Mi
           requests:
-            memory: "200Mi"  # Optional: set a memory request to match the limit
+            memory: "150Mi"  # Optional: set a memory request to match the limit
 
 ---
 apiVersion: v1
