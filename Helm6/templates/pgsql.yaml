@@ -1,59 +1,57 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: postgresql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql
+      app: postgresql
   template:
     metadata:
       labels:
-        app: mysql
+        app: postgresql
     spec:
       containers:
-        - name: mysql
-          image: mysql:8.0
+        - name: postgresql
+          image: postgres:13 # Use the PostgreSQL image
           ports:
-            - containerPort: 3306
+            - containerPort: 5432
           env:
-            - name: MYSQL_RANDOM_ROOT_PASSWORD
-              value: 'yes'
-            - name: MYSQL_DATABASE
+            - name: POSTGRES_DB
               value: semaphore
-            - name: MYSQL_USER
+            - name: POSTGRES_USER
               value: semaphore
-            - name: MYSQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               value: semaphore
           volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mysql-data
+            - mountPath: /var/lib/postgresql/data
+              name: postgresql-data
       volumes:
-        - name: mysql-data
+        - name: postgresql-data
           persistentVolumeClaim:
-            claimName: mysql-pvc
+            claimName: postgresql-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-service
+  name: postgresql-service
 spec:
   selector:
-    app: mysql
+    app: postgresql
   ports:
-    - port: 3306
-      targetPort: 3306
+    - port: 5432
+      targetPort: 5432
   type: LoadBalancer
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pvc
+  name: postgresql-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gi
+      storage: 4Gi
 
