@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uptime
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uptime-app
+  template:
+    metadata:
+      labels:
+        app: uptime-app
+    spec:
+      containers:
+      - name: uptime-app
+        image: louislam/uptime-kuma:latest  # Specify your image here
+        imagePullPolicy: Always  # Ensures the latest image is always pulled
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            memory: "200Mi"  # Set memory limit to 200Mi
+          requests:
+            memory: "200Mi"  # Optional: set a memory request to match the limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-service
+  namespace: default
+spec:
+  type: LoadBalancer  # Change to ClusterIP for internal routing via Ingress
+  selector:
+    app: uptime-app
+  ports:
+    - protocol: TCP
+      port: 80         # External port exposed by the service
+      targetPort: 3001  # The container's port (defined in your Deployment)
+
