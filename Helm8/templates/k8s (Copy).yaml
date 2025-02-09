@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-app
+  template:
+    metadata:
+      labels:
+        app: k8s-app
+    spec:
+      containers:
+      - name: k8s-app
+        image: ajaff/k8s:v1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            memory: "100Mi"
+          requests:
+            memory: "100Mi"
+
