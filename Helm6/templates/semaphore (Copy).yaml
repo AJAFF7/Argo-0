@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,11 +23,11 @@ spec:
             - name: SEMAPHORE_DB_PASS
               value: semaphore
             - name: SEMAPHORE_DB_HOST
-              value: postgresql-service  # Point to PostgreSQL service
+              value: postgresql-service # Point to PostgreSQL service
             - name: SEMAPHORE_DB_PORT
               value: "5432"
             - name: SEMAPHORE_DB_DIALECT
-              value: postgres  # Update dialect to postgres
+              value: postgres # Update dialect to postgres
             - name: SEMAPHORE_DB
               value: semaphore
             - name: SEMAPHORE_PLAYBOOK_PATH
