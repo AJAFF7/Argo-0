@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dms
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dms-app
+  template:
+    metadata:
+      labels:
+        app: dms-app
+    spec:
+      containers:
+      - name: dms-app
+        image: ajaff/dms:v1.0  # Specify your image here
+        imagePullPolicy: Always  # Ensures the latest image is always pulled
+        ports:
+        - containerPort: 8282
+        resources:
+          limits:
+            memory: "100Mi"  # Set memory limit to 100Mi
+          requests:
+            memory: "100Mi"  # Optional: set a memory request to match the limit
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret  # Name of the secret
+                key: mongo-uri  # The key within the secret to reference
+

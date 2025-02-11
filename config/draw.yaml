@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: draw
+  namespace: default
+spec:
+  replicas: 1  # Set this to the desired number of replicas
+  selector:
+    matchLabels:
+      app: draw-app
+  template:  # Corrected indentation for template
+    metadata:
+      labels:
+        app: draw-app
+    spec:
+      containers:
+      - name: draw-app
+        image: jgraph/drawio:latest  # Specify your image here
+        imagePullPolicy: Always  # Ensures the latest image is always pulled
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "250Mi"  # Set memory limit to 300Mi
+          requests:
+            memory: "150Mi"  # Optional: set a memory request to match the limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: draw-service
+  namespace: default
+spec:
+  type: LoadBalancer  # Change to ClusterIP for internal routing via Ingress
+  selector:
+    app: draw-app
+  ports:
+    - protocol: TCP
+      port: 80         # External port exposed by the service
+      targetPort: 8080  # The container's port (defined in your Deployment)
+

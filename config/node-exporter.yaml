@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nodex
+  namespace: default  # Change this if you have a different namespace
+spec:
+  selector:
+    matchLabels:
+      app: nodex
+  template:
+    metadata:
+      labels:
+        app: nodex
+    spec:
+      containers:
+      - name: nodex
+        image: prom/node-exporter:latest # You can check for the latest version
+        ports:
+        - containerPort: 9100
+          name: metrics
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+      tolerations:
+      - key: "node-role.kubernetes.io/master"  # Allow running on master nodes if needed
+        effect: "NoSchedule"
+        
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodex
+  namespace: default   # Make sure this matches the namespace of the DaemonSet  monitoring
+spec:
+  type: NodePort  # Change service type to NodePort
+  selector:
+    app: nodex
+  ports:
+  - port: 9100
+    targetPort: 9100
+    protocol: TCP
+    nodePort: 30600  # You can specify the nodePort or let Kubernetes assign one
+

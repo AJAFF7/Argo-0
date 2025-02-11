@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crm-app
+  template:
+    metadata:
+      labels:
+        app: crm-app
+    spec:
+      containers:
+      - name: crm-app
+        image: ajaff/crm:v1.0  # Specify your image here
+        imagePullPolicy: Always  # Ensures the latest image is always pulled
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            memory: "100Mi"  # Set memory limit to 100Mi
+          requests:
+            memory: "100Mi"  # Optional: set a memory request to match the limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crm-service
+  namespace: default
+spec:
+  type: LoadBalancer  # Change to ClusterIP for internal routing via Ingress
+  selector:
+    app: crm-app
+  ports:
+    - protocol: TCP
+      port: 80         # External port exposed by the service
+      targetPort: 8000  # The container's port (defined in your Deployment)
+
