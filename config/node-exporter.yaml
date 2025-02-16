@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+\apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: nodex
@@ -12,6 +12,7 @@ spec:
       labels:
         app: nodex
     spec:
+      hostNetwork: true  # Make sure the Pod uses the host's network
       containers:
       - name: nodex
         image: prom/node-exporter:latest # You can check for the latest version
@@ -30,20 +31,19 @@ spec:
       - key: "node-role.kubernetes.io/master"  # Allow running on master nodes if needed
         effect: "NoSchedule"
         
-        
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nodex
-  namespace: default   # Make sure this matches the namespace of the DaemonSet  monitoring
+  namespace: default   # Make sure this matches the namespace of the DaemonSet
 spec:
-  type: NodePort  # Change service type to NodePort
+  type: NodePort  # Expose it as NodePort so it's accessible outside the cluster
   selector:
     app: nodex
   ports:
   - port: 9100
     targetPort: 9100
     protocol: TCP
-    nodePort: 30600  # You can specify the nodePort or let Kubernetes assign one
+    nodePort: 30600  # Static nodePort (make sure it doesn't conflict with other services)
 
