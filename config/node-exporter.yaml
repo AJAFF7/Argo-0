@@ -1,8 +1,8 @@
-\apiVersion: apps/v1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: nodex
-  namespace: default  # Change this if you have a different namespace
+  namespace: monitoring  # Ensure this is the correct namespace
 spec:
   selector:
     matchLabels:
@@ -12,10 +12,10 @@ spec:
       labels:
         app: nodex
     spec:
-      hostNetwork: true  # Make sure the Pod uses the host's network
+      hostNetwork: true  # Ensure the Pod uses the host's network (needed for Node Exporter)
       containers:
       - name: nodex
-        image: prom/node-exporter:latest # You can check for the latest version
+        image: prom/node-exporter:latest  # Latest version (you can specify a version if needed)
         ports:
         - containerPort: 9100
           name: metrics
@@ -30,13 +30,13 @@ spec:
       tolerations:
       - key: "node-role.kubernetes.io/master"  # Allow running on master nodes if needed
         effect: "NoSchedule"
-        
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nodex
-  namespace: default   # Make sure this matches the namespace of the DaemonSet
+  namespace: monitoring  # Ensure this matches the DaemonSet namespace
 spec:
   type: NodePort  # Expose it as NodePort so it's accessible outside the cluster
   selector:
@@ -45,5 +45,5 @@ spec:
   - port: 9100
     targetPort: 9100
     protocol: TCP
-    nodePort: 30600  # Static nodePort (make sure it doesn't conflict with other services)
+    nodePort: 30600  # Static nodePort, ensure it doesn't conflict with others
 
