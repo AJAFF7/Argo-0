@@ -8,10 +8,10 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: dms.ajs-engineer.com  # Custom domain for local access
+    - host: dms.ajs-engineer.com  # Custom domain for local accesaaas
       http:
         paths:
-          - path: /
+          - path:
             pathType: Prefix
             backend:
               service:

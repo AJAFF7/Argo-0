@@ -3,12 +3,19 @@ kind: Service
 metadata:
   name: dms-service
   namespace: default
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8282"  # Port to scrape metrics from (internal port of the app)
 spec:
-  type: LoadBalancer   # Change to ClusterIP for internal routing via Ingress
+  type: LoadBalancer  # Change to LoadBalancer or ClusterIP for internal routing via Ingress
   selector:
     app: dms-app
   ports:
     - protocol: TCP
       port: 80         # External port exposed by the service
       targetPort: 8282  # The container's port (defined in your Rollout)
+
+
+
+
 
