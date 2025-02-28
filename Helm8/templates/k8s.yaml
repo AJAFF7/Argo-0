@@ -26,3 +26,19 @@ spec:
           requests:
             memory: "100Mi"
 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-service
+  namespace: default
+spec:
+  type: LoadBalancer   # Change to ClusterIP for internal routing via Ingress
+  selector:
+    app: k8s-app
+  ports:
+    - protocol: TCP
+      port: 80         # External port exposed by the service
+      targetPort: 3535  # The container's port (defined in your Rollout)
+

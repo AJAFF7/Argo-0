@@ -1,8 +1,8 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: nodex
-  namespace: monitoring  # Ensure this is the correct namespace
+  namespace: default  # Ensure this is the correct namespace
 spec:
   selector:
     matchLabels:
@@ -36,7 +36,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nodex
-  namespace: monitoring  # Ensure this matches the DaemonSet namespace
+  namespace: default  # Ensure this matches the DaemonSet namespace
 spec:
   type: NodePort  # Expose it as NodePort so it's accessible outside the cluster
   selector:
