@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: default
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: kbudde/rabbitmq-exporter:latest
+          ports:
+            - containerPort: 9419
+          env:
+            - name: RABBIT_URL
+              value: "http://rabbitmq:15672" # Replace with your RabbitMQ service name and management port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: default
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 9419
+      targetPort: 9419
+  type: LoadBalancer  # Exposing the service via LoadBalancer
+
