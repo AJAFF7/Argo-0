@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: microservice-container
-          image: docker.io/ajaff/microservices:v1.0  # Correct the image reference
+          image: docker.io/ajaff/microservices:v1.0  # Ensure image exists in the registry
           ports:
             - containerPort: 3535
             - containerPort: 3536
@@ -48,5 +48,5 @@ spec:
       protocol: TCP
       port: 3538
       targetPort: 3538
-  type: ClusterIP  # Exposes the service externally if available
+  type: LoadBalancer  # Use LoadBalancer or NodePort for external access
 

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-pv
+  namespace: default
+spec:
+  capacity:
+    storage: 5Gi  # Adjust the size as per your needs
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/grafana  # Adjust the path as per your environment
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi  # Should match the PV size
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /etc/grafana/grafana.ini
+              name: grafana-config
+              subPath: grafana.ini
+            - mountPath: /var/lib/grafana
+              name: grafana-data
+      volumes:
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: default
+data:
+  grafana.ini: |
+    [auth.anonymous]
+    enabled = true
+    org_name = Main Org.
+    org_role = Viewer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: default
+spec:
+  selector:
+    app: grafana
+  ports:
+    - protocol: TCP
+      port: 80         # External port (to be accessed from your browser)
+      targetPort: 3000  # Grafana container port
+  type: LoadBalancer  # Exposes the app externally (you can change this to ClusterIP or NodePort if you prefer)
+

@@ -21,7 +21,7 @@ data:
         static_configs:
           - targets: ['172.18.0.2:30001']  # Replace with your NGINX metrics endpoint  
           
-      - job_name: 'rabbitmq-exporter'
+      - job_name: 'rabbitmqx'
         static_configs:
           - targets: ['172.18.0.128:9419']  # Replace with your rabbitmq-exporter metrics endpoint  http:///
      

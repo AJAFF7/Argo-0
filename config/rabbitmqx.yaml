@@ -1,39 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq
+  name: rabbitmqx
   namespace: default
   labels:
-    app: rabbitmq
+    app: rabbitmqx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rabbitmq
+      app: rabbitmqx
   template:
     metadata:
       labels:
-        app: rabbitmq
+        app: rabbitmqx
     spec:
       containers:
-        - name: rabbitmq
+        - name: rabbitmqx
           image: kbudde/rabbitmq-exporter:latest
           ports:
             - containerPort: 9419
           env:
             - name: RABBIT_URL
-              value: "http://rabbitmq:15672" # Replace with your RabbitMQ service name and management port
+              value: "http://rabbitmq:15672"
+            - name: RABBIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: username
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: password
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq-service
+  name: rabbitmqx-service
   namespace: default
 spec:
   selector:
-    app: rabbitmq
+    app: rabbitmqx
   ports:
     - port: 9419
       targetPort: 9419
-  type: LoadBalancer  # Exposing the service via LoadBalancer
+  type: LoadBalancer
 
