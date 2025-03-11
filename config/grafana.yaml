@@ -79,7 +79,7 @@ spec:
     app: grafana
   ports:
     - protocol: TCP
-      port: 80         # External port (to be accessed from your browser)
+      port: 3000         # External port (to be accessed from your browser)
       targetPort: 3000  # Grafana container port
   type: LoadBalancer  # Exposes the app externally (you can change this to ClusterIP or NodePort if you prefer)
 
