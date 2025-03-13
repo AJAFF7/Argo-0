@@ -22,7 +22,7 @@ spec:
             - containerPort: 9419
           env:
             - name: RABBIT_URL
-              value: "http://rabbitmq:15672"
+              value: "http://rabbitmq-service:15672"
             - name: RABBIT_USER
               valueFrom:
                 secretKeyRef:

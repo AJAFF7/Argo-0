@@ -23,7 +23,7 @@ data:
           
       - job_name: 'rabbitmqx'
         static_configs:
-          - targets: ['172.18.0.128:9419']  # Replace with your rabbitmq-exporter metrics endpoint  http:///
+          - targets: ['172.18.0.121:9419']  # Replace with your rabbitmq-exporter metrics endpoint  http:///
      
 
 
