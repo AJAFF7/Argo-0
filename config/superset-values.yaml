@@ -1,0 +1,112 @@
+# Enable PostgreSQL and set a secure password
+postgresql:
+  enabled: true
+  postgresqlPassword: superset5550140  # Change this to a secure password
+
+# Enable Redis for caching
+redis:
+  enabled: true
+
+# Secret key for security
+configOverrides:
+  secret: |
+    SECRET_KEY = "gY2UJ8lGxqw6+LbFQPg/c/0oT8dVr+MUYWzL4xPC1tWt39uFaWLox+ds"
+
+# Service configuration - Expose externally using LoadBalancer
+service:
+  type: LoadBalancer  # Use LoadBalancer for external access
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8088
+      protocol: TCP  # No nodePort field since LoadBalancer doesn't need it
+
+# Ingress settings (optional, use if you want to access Superset via a domain)
+ingress:
+  enabled: false  # Set to true if using ingress
+  annotations: {}
+  hosts:
+    - host: superset.example.com  # Change to your domain
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []  # Configure if needed
+
+# Initial setup settings
+init:
+  loadExamples: false  # Set to true if you want demo dashboards
+
+# Worker configuration
+supersetWorker:
+  replicaCount: 2
+  command:
+    - /bin/sh
+    - -c
+    - |
+      apt update
+      apt install -y somepackage
+      apt autoremove -yqq --purge
+      apt clean
+      . {{ .Values.configMountPath }}/superset_bootstrap.sh
+      celery --app=superset.tasks.celery_app:app worker
+
+# Celery Beat for scheduled tasks (enable for alerts & reports)
+supersetCeleryBeat:
+  enabled: true
+
+# SMTP Configuration (if email reports are needed)
+extraEnv:
+  SMTP_HOST: smtp.gmail.com
+  SMTP_USER: user@gmail.com
+  SMTP_PORT: "587"
+  SMTP_MAIL_FROM: user@gmail.com
+
+extraSecretEnv:
+  SMTP_PASSWORD: "your-email-password"
+
+# Security, authentication, Celery, logging, and reports configurations
+configOverrides:
+  security: |
+    FEATURE_FLAGS = {
+        "DYNAMIC_PLUGINS": True
+    }
+    ENABLE_PROXY_FIX = True
+    AUTH_TYPE = 1  # Use Database authentication
+    AUTH_USER_REGISTRATION = True
+    AUTH_USER_REGISTRATION_ROLE = "Public"
+
+  celery_conf: |
+    from celery.schedules import crontab
+
+    class CeleryConfig:
+      broker_url = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/0"
+      imports = (
+          "superset.sql_lab",
+          "superset.tasks.cache",
+          "superset.tasks.scheduler",
+      )
+      result_backend = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/0"
+      beat_schedule = {
+          "reports.scheduler": {
+              "task": "reports.scheduler",
+              "schedule": crontab(minute="*", hour="*"),
+          },
+          "reports.prune_log": {
+              "task": "reports.prune_log",
+              "schedule": crontab(minute=0, hour=0),
+          }
+      }
+
+    CELERY_CONFIG = CeleryConfig
+
+  reports: |
+    WEBDRIVER_TYPE = "chrome"
+    WEBDRIVER_OPTION_ARGS = [
+        "--headless",
+        "--disable-gpu",
+        "--no-sandbox"
+    ]
+
+  logging: |
+    ENABLE_TIME_ROTATE = True
+
