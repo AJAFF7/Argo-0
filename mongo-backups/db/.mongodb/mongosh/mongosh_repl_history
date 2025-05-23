@@ -1,0 +1,9 @@
+db['personal1'].dropIndex('pername_1')
+db['personal1'].find({ pername: 'k8s' })
+db['p1-auths'].dropIndex("username_1")
+db['p1-auths'].dropIndex("personal1")
+db['p1-auths'].getIndexes()
+db['personal1'].find()
+db['p1-auths'].find()
+show collections
+use Client
