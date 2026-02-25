@@ -30,7 +30,7 @@ api:
   image: ajaff/blazor-api:latest
   replicas: 2
   service:
-    name: api-service
+    name: blazor-api
     port: 8080
     nodePort: 30308
   env:
