@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/AJAFF7/Argo-0.git
     targetRevision: main
-    path: Argo-0/Helm-Blazor
+    path: Helm-Blazor
     helm:
       valueFiles:
         - values.yaml
