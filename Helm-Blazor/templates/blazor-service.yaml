@@ -1,0 +1,18 @@
+{{- if .Values.blazor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.blazor.service.name }}
+  labels:
+    app: blazor-app
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.blazor.service.port }}
+    targetPort: {{ .Values.blazor.service.port }}
+    nodePort: {{ .Values.blazor.service.nodePort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: blazor-app
+{{- end }}

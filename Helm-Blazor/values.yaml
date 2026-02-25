@@ -1,0 +1,87 @@
+# Blazor Auth App - Helm Values
+
+# PostgreSQL Database
+postgres:
+  enabled: true
+  image: postgres:17-alpine
+  replicas: 1
+  service:
+    name: postgres-service
+    port: 5432
+    nodePort: 30309
+  env:
+    database: blazorauthdb
+    user: blazoruser
+    password: BlazorPass123!
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  storage:
+    size: 2Gi
+    storageClass: standard
+
+# .NET API Backend
+api:
+  enabled: true
+  image: ajaff/blazor-api:latest
+  replicas: 2
+  service:
+    name: api-service
+    port: 8080
+    nodePort: 30308
+  env:
+    aspnetcoreEnvironment: Docker
+    aspnetcoreUrls: "http://+:8080"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  healthCheck:
+    enabled: true
+    path: /api/doctors
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+# Blazor WebAssembly Frontend
+blazor:
+  enabled: true
+  image: ajaff/blazor-app:latest
+  replicas: 2
+  service:
+    name: blazor-service
+    port: 80
+    nodePort: 30307
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: nginx
+  host: blazor.local
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  tls:
+    enabled: false
+
+# Rollout Strategy
+rollout:
+  enabled: true
+  strategy: blueGreen
+  blueGreen:
+    autoPromotionEnabled: true
+    autoPromotionSeconds: 30
+    scaleDownDelaySeconds: 30

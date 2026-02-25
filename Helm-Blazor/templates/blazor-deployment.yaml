@@ -1,0 +1,44 @@
+{{- if .Values.blazor.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blazor-app
+  labels:
+    app: blazor-app
+spec:
+  replicas: {{ .Values.blazor.replicas }}
+  selector:
+    matchLabels:
+      app: blazor-app
+  template:
+    metadata:
+      labels:
+        app: blazor-app
+    spec:
+      containers:
+      - name: blazor
+        image: {{ .Values.blazor.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.blazor.service.port }}
+          name: http
+        resources:
+          requests:
+            memory: {{ .Values.blazor.resources.requests.memory }}
+            cpu: {{ .Values.blazor.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.blazor.resources.limits.memory }}
+            cpu: {{ .Values.blazor.resources.limits.cpu }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.blazor.service.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.blazor.service.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+{{- end }}

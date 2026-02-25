@@ -1,0 +1,14 @@
+apiVersion: v2
+name: blazor-auth-app
+description: A Helm chart for Blazor Auth Application with PostgreSQL and .NET API
+type: application
+version: 1.0.0
+appVersion: "latest"
+keywords:
+  - blazor
+  - dotnet
+  - postgresql
+  - authentication
+maintainers:
+  - name: SoftMax Team
+    email: ajs.ingenieur@gmail.com
