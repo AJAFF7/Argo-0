@@ -6,11 +6,10 @@ metadata:
   labels:
     app: postgres
 spec:
-  type: NodePort
+  type: {{ .Values.postgres.service.type }}
   ports:
   - port: {{ .Values.postgres.service.port }}
     targetPort: {{ .Values.postgres.service.port }}
-    nodePort: {{ .Values.postgres.service.nodePort }}
     protocol: TCP
     name: postgres
   selector:

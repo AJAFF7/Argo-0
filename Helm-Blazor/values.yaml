@@ -7,8 +7,8 @@ postgres:
   replicas: 1
   service:
     name: postgres-service
+    type: ClusterIP
     port: 5432
-    nodePort: 30309
   env:
     database: blazorauthdb
     user: blazoruser
@@ -31,8 +31,8 @@ api:
   replicas: 2
   service:
     name: blazor-api
+    type: LoadBalancer
     port: 8080
-    nodePort: 30308
   env:
     aspnetcoreEnvironment: Docker
     aspnetcoreUrls: "http://+:8080"
@@ -56,8 +56,8 @@ blazor:
   replicas: 2
   service:
     name: blazor-service
+    type: LoadBalancer
     port: 80
-    nodePort: 30307
   resources:
     requests:
       memory: "128Mi"

@@ -6,11 +6,10 @@ metadata:
   labels:
     app: blazor-api
 spec:
-  type: NodePort
+  type: {{ .Values.api.service.type }}
   ports:
   - port: {{ .Values.api.service.port }}
     targetPort: {{ .Values.api.service.port }}
-    nodePort: {{ .Values.api.service.nodePort }}
     protocol: TCP
     name: http
   selector:
