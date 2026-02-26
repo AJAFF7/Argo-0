@@ -41,13 +41,17 @@ spec:
           httpGet:
             path: {{ .Values.api.healthCheck.path }}
             port: {{ .Values.api.service.port }}
-          initialDelaySeconds: {{ .Values.api.healthCheck.initialDelaySeconds }}
-          periodSeconds: {{ .Values.api.healthCheck.periodSeconds }}
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
         readinessProbe:
           httpGet:
             path: {{ .Values.api.healthCheck.path }}
             port: {{ .Values.api.service.port }}
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 6
         {{- end }}
 {{- end }}
