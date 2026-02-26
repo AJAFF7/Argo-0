@@ -1,0 +1,117 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init-{{ .Release.Revision | default "1" }}
+  labels:
+    app: db-init
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app: db-init
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: db-init
+        image: postgres:17-alpine
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for PostgreSQL..."
+          until pg_isready -h {{ .Values.postgres.service.name }} -p {{ .Values.postgres.service.port }} -U {{ .Values.postgres.env.user }}; do
+            sleep 2
+          done
+          
+          echo "Creating database tables..."
+          psql -v ON_ERROR_STOP=1 <<-EOSQL
+            CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+              "MigrationId" varchar(150) NOT NULL PRIMARY KEY,
+              "ProductVersion" varchar(32) NOT NULL
+            );
+            
+            CREATE TABLE IF NOT EXISTS "Users" (
+              "Id" SERIAL PRIMARY KEY,
+              "Username" varchar(50) UNIQUE NOT NULL,
+              "Email" varchar(100),
+              "PasswordHash" text NOT NULL,
+              "FirstName" varchar(50),
+              "LastName" varchar(50),
+              "Phone" varchar(20),
+              "CreatedAt" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE TABLE IF NOT EXISTS "Doctors" (
+              "Id" SERIAL PRIMARY KEY,
+              "FirstName" varchar(50) NOT NULL,
+              "LastName" varchar(50) NOT NULL,
+              "Specialization" varchar(100) NOT NULL,
+              "Description" text,
+              "Email" varchar(100),
+              "Phone" varchar(20),
+              "ImageUrl" text,
+              "ConsultationFee" decimal(10,2),
+              "YearsOfExperience" integer,
+              "IsAvailable" boolean DEFAULT true,
+              "CreatedAt" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE TABLE IF NOT EXISTS "Assistants" (
+              "Id" SERIAL PRIMARY KEY,
+              "FullName" varchar(100) NOT NULL,
+              "Email" varchar(100),
+              "Username" varchar(50),
+              "PasswordHash" text,
+              "PhoneNumber" varchar(20),
+              "ETagBarcode" varchar(50) UNIQUE NOT NULL,
+              "CreatedAt" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              "IsActive" boolean DEFAULT true
+            );
+            
+            CREATE TABLE IF NOT EXISTS "Appointments" (
+              "Id" SERIAL PRIMARY KEY,
+              "UserId" integer REFERENCES "Users"("Id"),
+              "DoctorId" integer REFERENCES "Doctors"("Id"),
+              "AppointmentDate" date NOT NULL,
+              "TimeSlot" varchar(20) NOT NULL,
+              "PatientName" varchar(100) NOT NULL,
+              "PatientEmail" varchar(100),
+              "PatientPhone" varchar(20),
+              "Symptoms" text,
+              "Status" varchar(20) DEFAULT 'Pending',
+              "CreatedAt" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              "UpdatedAt" timestamp,
+              "CheckedInByAssistantId" integer,
+              "PatientArrived" boolean DEFAULT false,
+              "PatientArrivedAt" timestamp,
+              "IsFinished" boolean DEFAULT false,
+              "FinishedAt" timestamp
+            );
+            
+            INSERT INTO "Assistants" ("FullName", "Email", "Username", "PasswordHash", "PhoneNumber", "ETagBarcode", "IsActive")
+            VALUES 
+              ('Test Assistant', 'test@softmax.com', 'test', 'dummy', '+1-555-0100', 'ASST-TEST-001', true),
+              ('SoftMax Assistant', 'assistant@softmax.com', 'softmax', 'dummy', '+1-555-0201', 'ASST-SOFTMAX', true),
+              ('AST Assistant', 'ast@softmax.com', 'ast20260220', 'dummy', '+1-555-0300', 'AST-20260220-76807', true)
+            ON CONFLICT ("ETagBarcode") DO NOTHING;
+            
+            SELECT 'Database initialized successfully!' as result;
+          EOSQL
+        env:
+        - name: PGHOST
+          value: {{ .Values.postgres.service.name }}
+        - name: PGPORT
+          value: "{{ .Values.postgres.service.port }}"
+        - name: PGDATABASE
+          value: {{ .Values.postgres.env.database }}
+        - name: PGUSER
+          value: {{ .Values.postgres.env.user }}
+        - name: PGPASSWORD
+          value: {{ .Values.postgres.env.password }}
+{{- end }}
+
